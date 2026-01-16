@@ -20,6 +20,12 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
+      # 🔑 CREATE DIRECTORY FIRST (THIS FIXES YOUR ERROR)
+      - name: Prepare EC2 directory
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+          "mkdir -p /home/ubuntu/app-backend"
+
       - name: Sync app-backend to EC2
         run: |
           rsync -avz --delete \
