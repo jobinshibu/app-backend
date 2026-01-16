@@ -16,18 +16,16 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
+          printf "%s\n" "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Ensure target directory exists
         run: |
-          ssh -o StrictHostKeyChecking=no \
-              -i ~/.ssh/id_ed25519 \
-              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-              "mkdir -p /home/${{ secrets.EC2_USER }}/app-backend/api/server"
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+          "mkdir -p /home/${{ secrets.EC2_USER }}/app-backend/api/server"
 
-      - name: Rsync App Backend
+      - name: Rsync backend code
         run: |
           rsync -avz \
             --exclude '.git/' \
@@ -35,15 +33,13 @@ jobs:
             --exclude 'node_modules/' \
             --exclude '.env' \
             --exclude 'uploads/' \
-            -e "ssh -i ~/.ssh/id_ed25519" \
             ./api/server/ \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app-backend/api/server/
 
-      - name: Install & Restart App Backend
+      - name: Install deps & restart app
         run: |
-          ssh -o StrictHostKeyChecking=no \
-              -i ~/.ssh/id_ed25519 \
-              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-              "cd /home/${{ secrets.EC2_USER }}/app-backend/api/server && \
-               npm install --production && \
-               pm2 restart app-backend || pm2 start index.js --name app-backend"
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            cd /home/${{ secrets.EC2_USER }}/app-backend/api/server
+            npm install --production
+            pm2 restart app-backend || pm2 start index.js --name app-backend
+          EOF
