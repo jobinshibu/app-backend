@@ -7,7 +7,7 @@ import db from '../models/index.js';
 import NotificationService from '../services/notificationService.js';
 import { sendAdminNotification } from '../utils/adminNotifier.js';
 
-// ⭐ IMPORT EMAIL SERVICE
+
 import { sendBookingEmails } from "../services/EmailService.js";
 
 function formatDate(d) {
