@@ -18,12 +18,14 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
+
+          # ✅ FIX: explicitly trust EC2 host
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # 🔑 CREATE DIRECTORY FIRST (THIS FIXES YOUR ERROR)
-      - name: Prepare EC2 directory
+      - name: Create app-backend directory on EC2
         run: |
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+          ssh -i ~/.ssh/id_ed25519 \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
           "mkdir -p /home/ubuntu/app-backend"
 
       - name: Sync app-backend to EC2
@@ -41,7 +43,8 @@ jobs:
 
       - name: Install deps & restart app-backend
         run: |
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_ed25519 \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd /home/ubuntu/app-backend
             npm install --omit=dev
             pm2 restart app-backend || pm2 start index.js --name app-backend
