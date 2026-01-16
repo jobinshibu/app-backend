@@ -30,9 +30,6 @@ jobs:
 
       - name: Rsync backend code to EC2
         run: |
-          DEST="${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app-backend/api/server/"
-          echo "Rsync destination => $DEST"
-
           rsync -avz \
             --exclude 'upload/' \
             --exclude '.git/' \
@@ -41,7 +38,7 @@ jobs:
             --exclude '.env' \
             -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
             ./api/server/ \
-            "$DEST"
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/app-backend/api/server/
 
       - name: Install dependencies and restart backend
         run: |
@@ -52,4 +49,4 @@ jobs:
               cd ~/app-backend/api/server
               npm install --production
               pm2 restart app-backend || pm2 start index.js --name app-backend
-            EOF
+          EOF
