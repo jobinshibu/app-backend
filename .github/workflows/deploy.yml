@@ -18,18 +18,16 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Add EC2 host to known_hosts
-        run: |
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Prepare target directory on EC2
         run: |
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-          "mkdir -p ~/healine-backend/api/server"
+          ssh -i ~/.ssh/id_ed25519 \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            "mkdir -p ~/healine-backend/api/server"
 
-      - name: Rsync only changed files to EC2
+      - name: Rsync backend code to EC2
         run: |
           rsync -avz \
             --exclude 'upload/' \
@@ -37,14 +35,17 @@ jobs:
             --exclude '.github/' \
             --exclude 'node_modules/' \
             --exclude '.env' \
-            -e "ssh -i ~/.ssh/id_ed25519" \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
             ./api/server/ \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/healine-backend/api/server/
 
-      - name: SSH into EC2 and restart service
+      - name: Install dependencies and restart backend
         run: |
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd ~/healine-backend/api/server
-            npm install --production
-            pm2 restart healine-api || pm2 start index.js --name healine-api
+          ssh -i ~/.ssh/id_ed25519 \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+              cd ~/healine-backend/api/server
+              npm install --production
+              pm2 restart app-backend || pm2 start index.js --name app-backend
           EOF
