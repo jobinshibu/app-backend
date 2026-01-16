@@ -13,20 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup SSH
+      - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-          # ✅ FIX: explicitly trust EC2 host
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
       - name: Create app-backend directory on EC2
         run: |
-          ssh -i ~/.ssh/id_ed25519 \
-          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-          "mkdir -p /home/ubuntu/app-backend"
+          ssh -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              -i ~/.ssh/id_ed25519 \
+              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+              "mkdir -p /home/ubuntu/app-backend"
 
       - name: Sync app-backend to EC2
         run: |
@@ -37,14 +36,16 @@ jobs:
             --exclude ".env" \
             --exclude "firebase-service-account.json" \
             --exclude "uploads/" \
-            -e "ssh -i ~/.ssh/id_ed25519" \
+            -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_ed25519" \
             ./ \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/app-backend/
 
       - name: Install deps & restart app-backend
         run: |
-          ssh -i ~/.ssh/id_ed25519 \
-          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              -i ~/.ssh/id_ed25519 \
+              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd /home/ubuntu/app-backend
             npm install --omit=dev
             pm2 restart app-backend || pm2 start index.js --name app-backend
