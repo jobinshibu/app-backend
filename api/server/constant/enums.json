@@ -1,0 +1,154 @@
+{
+  "PAYLOAD_TYPE": {
+    "BODY": "body",
+    "PARAMS": "params",
+    "QUERY": "query"
+  },
+  "USER": {
+    "USER": "USER",
+    "ADMIN": "ADMIN"
+  },
+  "USER_RESPONSE": {
+    "USER_FETCHED_SUCCESSFULLY": "User fetched successfully",
+    "USER_ADDED_SUCCESSFULLY": "User added successfully",
+    "USER_ALREADY_EXIST": "User Is Already Exist",
+    "USER_EMAIL_ALREADY_EXIST": "Email already exist",
+    "USER_NOT_EXIST": "User is not exist",
+    "USER_MOBILE_NOT_EXIST": "Mobile Number is not exist",
+    "USER_EMAIL_MOBILE_NOT_EXIST": "Email/Mobile Number is not exist",
+    "USER_PASSWORD_NOT_CORRECT": "Password is not correct",
+    "USER_LOGIN_SUCCESSFULLY": "User login successfully",
+    "USER_UPDATED_SUCCESSFULLY": "User updated successfully",
+    "USER_DELETED_SUCCESSFULLY": "Account deleted successfully",
+    "USER_NOT_AUTHORIZED": "User is not authorized",
+    "ERROR_ADDING_USER": "Error adding user",
+    "ERROR_UPDATING_USER": "Error updating user",
+    "ERROR_DELETING_USER": "Error deleting user",
+    "OTP_VERIFIED_SUCCESSFULLY": "Otp is Verified",
+    "USER_MOBILE_ALREADY_EXIST": "Mobile Number Is Already Exist",
+    "USER_MOBILE_NOT_VALID": "User mobile number is invalid",
+    "USER_NOT_UPDATED": "User not updated",
+    "OTP_SEND_SUCCESFULLY": "Otp send succesfully",
+    "OTP_NOT_VERIFIED": "Otp not verified"
+  },
+  "TOKEN_ERROR": {
+    "TOKEN_NOT_VALID": "Token is invalid"
+  },
+  "CHATROOM_RESPONSE": {
+    "ROOM_NOT_FOUND": "Chat room not found",
+    "PARTICIPATES_FETCHED_SUCCESSFULLY": "Participates fetched successfully",
+    "CHATS_FETCHED_SUCCESSFULLY": "Chats fetched successfully",
+    "ERROR_GETTING_PARTICIPATES": "Error getting participates",
+    "CHAT_ROOM_CREATED_SUCCESSFULLY": "Chatroom created successfully",
+    "PARTICIPATE_ADDEDD_SUCCESSFULLY": "Participate added successfully"
+  },
+  "HOTELBOOKING_RESPONSE": {
+    "CREATE_BOOKING_SUCCESFULLY": "Hotel Booking succesfully",
+    "NO_PREVIOUS_HOTELBOOKINDDATA": "Previous hotel booking not found",
+    "PREVIOUS_BOOKING_FETCH": "Previous hotel booking details succesfully find",
+    "BOOKING_HISTORY_DETAILS": "Hotel booking details fetched succesfully",
+    "BOOKING_HISTORY_NOT_FOUND": "Hotel booking history details not found.",
+    "HOTEL_BOOKED_SUCCESFULLY": "Hotel booked succesfully",
+    "HOTEL_NOT_BOOKED_SUCCESFULLY": "Hotel not booked",
+    "HOTEL_BOOKING_DETAIL_NOT_FOUND": "Hotel booking detail not found",
+    "CHECK_IN_SUCCESSFULLY": "User CheckIn Successfully.",
+    "CHECK_OUT_SUCCESSFULLY": "User CheckOut Successfully.",
+    "BOOKING_STATUS_UPDATED": "Hotel booking status updated succesfully.",
+    "BOOKING_NOT_FOUND": "Booking Not Found."
+  },
+  "HOTEL_RESPONSE": {
+    "NOT_CREATE_HOTEL": "Hotel not added",
+    "CREATE_HOTEL": "Hotel created succesfully",
+    "HOTEL_FETCHED": "Hotel Fetcheed succesfully",
+    "HOTEL_NOT_FETCHED": "Hotel not fetched",
+    "ROOM_CATEGORY_NOT_FIND": "Room category not find",
+    "HOTEL_ALREADY_EXIST": "Hotel name is already exist",
+    "HOTEL_REVIEW_ALREADY_EXIST": "Hotel Review Already Exist",
+    "HOTEL_REVIEW_ADD": "Hotel Review Add Successfully",
+    "HOTEL_REVIEW_LIST": "Hotel Review get Successfully",
+    "HOTEL_REVIEW_NOT_FOUND": "Hotel Review Not Found"
+  },
+  "ROOM_FACILITY": {
+    "CREATE_ROOMFACILITY_SUCCESFULLY": "Room facility added succesfully",
+    "ROOMFACILITY_NOT_CREATE": "Room facility not added",
+    "ROOM_FACILITY_FOUND": "Room facility fetched succesfully",
+    "ROOMFACILITY_NOT_FOUND": "Room facility not find"
+  },
+  "ROOM_CATEGORIES": {
+    "ROOM_CATEGORIES_ADD_SUCCESFULLY": "Room categories add succesfully",
+    "ROOM_CATEGORIES_ALREADY_EXIST": "Room categories name already exist",
+    "ROOM_CATEGORIES_NOT_ADD": "Room categories not added",
+    "ROOM_CATEGORY_NOT_FOUND": "Room categories not find",
+    "ROOM_CATEGORY_FOUND": "Room categories data found"
+  },
+  "ROOM_TYPE": {
+    "ROOM_TYPE_ADD_SUCCESFULLY": "Room type create succesfully",
+    "ROOM_TYPE_NOT_ADD": "Room type not added",
+    "ROOM_NAME_ALREADY_EXIST": "Room name is already exist",
+    "ROOM_TYPE_FETCH_SUCCESFULLY": "Room details fetch succesfully",
+    "ROOM_TYPE_NOT_FETCH": "Room details not found"
+  },
+  "ROOM": {
+    "ROOM_FETCHED": "Room fetched succesfully",
+    "ROOM_NOT_FETCHED": "Room is not found",
+    "ROOM_NOT_AVILABLE": "Room not avilable",
+    "ROOM_BOOKED_SUCCESFULLY": "Room booked succesfully",
+    "ROOM_NOT_BOOKED": "Room not booked succesfully"
+  },
+  "DESTINATION_RESPONSE": {
+    "DESTINATION_NOT_CREATE": "Destination not added",
+    "DESTINATION_CREATE": "Destination added succesfully",
+    "DESTINATION_ALREADY_EXIST": "Destination name is already Exist",
+    "DESTINATION_FIND_SUCCESFULLY": "Destination and Hotel find succesfully",
+    "DESTINATION_NOT_FOUND": "Destination not found",
+    "POPULAR_DESTINATION_FIND_SUCCESFULLY": "ALL popular destination find succesfully",
+    "DESTINATION_HOTEL_FIND_SUCCESFULLY": "destination hotel find succesfully",
+    "DESTINATION_HOTEL_NOT_FIND_SUCCESFULLY": "Destination Hotel not find ",
+    "DESTINATION_IMAGE_NOT_FOUND": "Destination image not find"
+  },
+  "SEARCH_DATA": {
+    "SEARCH_DATA_NOT_FOUND": "Destination is not fetched",
+    "HOTEL_NOT_FETCHED": "Hotel not found",
+    "SEARCH_HOTEL_DATA": "Hotel find succesfully"
+  },
+  "TEAM_RESPONSE": {
+    "TEAM_NOT_FOUND": "Team not found",
+    "TEAM_CREATED_SUCCESSFULLY": "Team created successfully",
+    "PARTICIPATE_ADDEDD_SUCCESSFULLY": "Participate added successfully",
+    "PARTICIPATES_FETCHED_SUCCESSFULLY": "Participates fetched successfully"
+  },
+  "CHAT": {
+    "SOCKET_EVENT_NAME": {
+      "CONNECTION": "connection",
+      "CONNECTUSER": "connectUser",
+      "ONLINEUSER": "onlineUser",
+      "ACTIVEUSER": "activeUser",
+      "JOIN": "join",
+      "HISTORY": "history",
+      "TYPING": "typing",
+      "DELETE_MESSAGE": "delete-message",
+      "NEW_MESSAGE": "new-message",
+      "SENDMESSAGE": "send-message",
+      "DISCONNECT": "disconnect",
+      "ERROR": "error"
+    }
+  },
+  "COMMON": {
+    "SERVER_ERROR": "Server Error",
+    "SOMETHING_WENT_WRONG": "Something went wrong",
+    "DATA_FOUND": "Data Found",
+    "DATA_NOT_FOUND": "Data Not Found",
+    "RECORD_DELETED_SUCCESSFULLY": "Record deleted successfully.",
+    "INTERNAL_SERVER_ERROR": "internal_server_error"
+  },
+  "SUCCESS": {
+    "LOGIN_SUCCESS": "login_success",
+    "REGISTRATION_SUCCESS": "registration_success",
+    "OTP_VERIFIED": "otp_verified"
+  },
+  "OTP_ERROR": {
+    "OTP_NOT_FOUND": "otp_not_found",
+    "OTP_EXPIRED": "otp_expired",
+    "OTP_INVALID": "otp_invalid"
+  }
+}

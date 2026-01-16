@@ -1,0 +1,27 @@
+{
+  "development": {
+    "username": "root",
+    "password": "8932",
+    "database": "healine",
+    "host": "localhost",
+    "dialect": "mysql",
+    "port":"3306"
+  },
+  "test": {
+    "username": "admina",
+    "password": "H3alineR##ta",
+    "database": "healinea",
+    "host": "dev-healine.ccwprz2lsvji.ap-south-1.rds.amazonaws.com",
+    "dialect": "mysql",
+    "port":"3306"
+    
+  },
+  "production": {
+    "username": "flml",
+    "password": "FlmL@#87654?!GH",
+    "database": "healine",
+    "host": "healine-meta-dev.ccwprz2lsvji.ap-south-1.rds.amazonaws.com",
+    "dialect": "mysql",
+    "port":"3306"
+  }
+}

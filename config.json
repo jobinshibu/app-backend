@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "",
+    "database": "healine",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "admin",
+    "password": "H3alineR##t",
+    "database": "healine",
+    "host": "dev-healine.ccwprz2lsvji.ap-south-1.rds.amazonaws.com",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "flml",
+    "password": "FlmL@#87654?!GH",
+    "database": "healine",
+    "host": "healine-meta-dev.ccwprz2lsvji.ap-south-1.rds.amazonaws.com",
+    "dialect": "mysql"
+  }
+}

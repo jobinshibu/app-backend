@@ -1,0 +1,16 @@
+{
+  "name": "healine-functions",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^11.11.0",
+    "firebase-functions": "^4.7.1",
+    "express": "^4.21.2"
+  }
+}
+
+
