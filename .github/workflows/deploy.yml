@@ -1,4 +1,4 @@
-name: Deploy App Backend (api/server) to EC2
+name: Deploy App Backend to EC2
 
 on:
   push:
@@ -13,43 +13,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH key
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > ~/.ssh/id_ed25519
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Prepare target directory on EC2
+      - name: Ensure target directory exists
         run: |
-          ssh -i ~/.ssh/id_ed25519 \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-              mkdir -p ~/app-backend/api/server
-            EOF
+          ssh -o StrictHostKeyChecking=no \
+              -i ~/.ssh/id_ed25519 \
+              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+              "mkdir -p /home/${{ secrets.EC2_USER }}/app-backend/api/server"
 
-      - name: Rsync backend code to EC2
+      - name: Rsync App Backend
         run: |
-          DEST="${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app-backend/api/server/"
-          echo "Rsync destination => $DEST"
-
           rsync -avz \
-            --exclude 'upload/' \
             --exclude '.git/' \
             --exclude '.github/' \
             --exclude 'node_modules/' \
             --exclude '.env' \
-            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            --exclude 'uploads/' \
+            -e "ssh -i ~/.ssh/id_ed25519" \
             ./api/server/ \
-            "$DEST"
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app-backend/api/server/
 
-      - name: Install dependencies and restart backend
+      - name: Install & Restart App Backend
         run: |
-          ssh -i ~/.ssh/id_ed25519 \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-              cd ~/app-backend/api/server
-              npm install --production
-              pm2 restart app-backend || pm2 start index.js --name app-backend
-            EOF
+          ssh -o StrictHostKeyChecking=no \
+              -i ~/.ssh/id_ed25519 \
+              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+              "cd /home/${{ secrets.EC2_USER }}/app-backend/api/server && \
+               npm install --production && \
+               pm2 restart app-backend || pm2 start index.js --name app-backend"
