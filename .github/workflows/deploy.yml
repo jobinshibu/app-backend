@@ -10,18 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup SSH key from GitHub Secrets
-      - name: Setup SSH key
+      - name: Setup SSH key (base64-safe)
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.EC2_SSH_KEY_BASE64 }}" | base64 -d > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-      # 3️⃣ 🔥 TEST SSH (THIS CONFIRMS KEY IS CORRECT)
       - name: Test SSH connection
         run: |
           ssh -o StrictHostKeyChecking=no \
@@ -30,7 +27,6 @@ jobs:
               ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
               "echo SSH_OK_FROM_GITHUB"
 
-      # 4️⃣ Ensure target directory exists on EC2
       - name: Prepare EC2 directory
         run: |
           ssh -o StrictHostKeyChecking=no \
@@ -39,8 +35,7 @@ jobs:
               ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
               "mkdir -p /home/ubuntu/app-backend"
 
-      # 5️⃣ Sync code to EC2 (safe excludes)
-      - name: Deploy app-backend code
+      - name: Deploy app-backend
         run: |
           rsync -avz --delete \
             --exclude ".git/" \
@@ -53,7 +48,6 @@ jobs:
             ./ \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/app-backend/
 
-      # 6️⃣ Install deps & restart PM2 process
       - name: Install deps & restart app-backend
         run: |
           ssh -o StrictHostKeyChecking=no \
