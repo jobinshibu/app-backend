@@ -19,27 +19,33 @@ let envConfig = config[env];
 const db = {};
 
 let sequelize;
-if (envConfig.use_env_variable) {
-  console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
-  console.log(process.env[envConfig.use_env_variable]);
-  console.log(envConfig);
+if (process.env.DB_NAME) {
+  console.log('Using environment variables for DB connection');
+  sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASS || process.env.DB_PASSWORD,
+    {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT || 3306,
+      dialect: process.env.DIALECT || 'mysql',
+      logging: false,
+    }
+  );
+} else if (envConfig.use_env_variable) {
   sequelize = new Sequelize(process.env[envConfig.use_env_variable], envConfig);
 } else {
-  console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-  console.log(envConfig.database);
-  console.log(envConfig.username);
-  console.log(envConfig.password);
-  console.log(envConfig);
   sequelize = new Sequelize(
     envConfig.database,
     envConfig.username,
     envConfig.password,
     envConfig
   );
-  sequelize.authenticate()
-    .then(() => console.log('✅ DB connected'))
-    .catch(err => console.error('❌ DB connection failed:', err));
 }
+
+sequelize.authenticate()
+  .then(() => console.log('✅ DB connected'))
+  .catch(err => console.error('❌ DB connection failed:', err));
 
 fs.readdirSync(__dirname)
   .filter((file) => {

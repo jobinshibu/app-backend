@@ -17,11 +17,11 @@
     
   },
   "production": {
-    "username": "flml",
-    "password": "FlmL@#87654?!GH",
-    "database": "healine",
-    "host": "healine-meta-dev.ccwprz2lsvji.ap-south-1.rds.amazonaws.com",
-    "dialect": "mysql",
-    "port":"3306"
+    "username": "appuser",
+    "password": "StrongPassword",
+    "database": "admin_backend",
+    "host": "admin-backend.cf8ycm884mxh.me-central-1.rds.amazonaws.com",
+    "port": "3306",
+    "dialect": "mysql"
   }
 }
