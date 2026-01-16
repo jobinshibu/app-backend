@@ -24,7 +24,8 @@ dist/
 
 
 .env
-healine-backend/api/server/config/firebase-service-account.json
+firebase-service-account.json
+api/server/config/firebase-service-account.json
 upload/
 
 # Maven
