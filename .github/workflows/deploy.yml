@@ -1,61 +1,21 @@
-name: Deploy App Backend to EC2
+name: SSH Key Diagnostics
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  diagnose:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup SSH key (binary safe)
+      - name: Write SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY_B64 }}" | base64 --decode > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-      - name: Test SSH connection
+      - name: Inspect key file
         run: |
-          ssh -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null \
-              -i ~/.ssh/id_ed25519 \
-              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-              "echo SSH_OK_FROM_GITHUB"
-
-      - name: Prepare EC2 directory
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null \
-              -i ~/.ssh/id_ed25519 \
-              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-              "mkdir -p /home/ubuntu/app-backend"
-
-      - name: Deploy app-backend
-        run: |
-          rsync -avz --delete \
-            --exclude ".git/" \
-            --exclude ".github/" \
-            --exclude "node_modules/" \
-            --exclude ".env" \
-            --exclude "firebase-service-account.json" \
-            --exclude "uploads/" \
-            -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_ed25519" \
-            ./ \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/app-backend/
-
-      - name: Install deps & restart app-backend
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null \
-              -i ~/.ssh/id_ed25519 \
-              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/ubuntu/app-backend
-            npm install --omit=dev
-            pm2 restart app-backend || pm2 start index.js --name app-backend
-            pm2 save
-          EOF
+          ls -l ~/.ssh/id_ed25519
+          file ~/.ssh/id_ed25519
+          ssh-keygen -lf ~/.ssh/id_ed25519 || true
