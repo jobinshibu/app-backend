@@ -1,0 +1,30 @@
+name: SSH Diagnostics
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Write SSH key from secret
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY_B64 }}" | base64 --decode > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+      - name: Inspect key file
+        run: |
+          ls -l ~/.ssh/id_ed25519
+          file ~/.ssh/id_ed25519
+          ssh-keygen -lf ~/.ssh/id_ed25519
+
+      - name: Try SSH (no command)
+        run: |
+          ssh -vvv \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -i ~/.ssh/id_ed25519 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            "echo CONNECTED_FROM_GITHUB"
