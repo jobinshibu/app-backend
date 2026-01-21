@@ -21,13 +21,13 @@ const app = await express();
 
 
 app.use(cors({
-  origin: 'https://healine-836d0.web.app',
+  origin: 'https://healinegarage.web.app',
   credentials: true,
 }));
 
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://healine-836d0.web.app');
+  res.header('Access-Control-Allow-Origin', 'https://healinegarage.web.app');
   res.header('Access-Control-Allow-Credentials', 'true');
   next();
 });
