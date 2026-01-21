@@ -20,24 +20,17 @@ import NotificationService from './api/server/services/notificationService.js';
 const app = await express();
 
 
-const allowedOrigins = [
-  'https://healinegarage.web.app',
-  'https://healine-836d0.web.app',
-  'http://localhost:3000',
-  'http://localhost:8080',   // common Flutter web port
-  'http://localhost:8084', // only if really needed
-];
-
 app.use(cors({
-  origin: allowedOrigins,
+  origin: 'https://healinegarage.web.app',
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Body parsers (very important!)
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://healinegarage.web.app');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
 
 // app.use(express.json());
 app.use('/api', notificationRoutes);
