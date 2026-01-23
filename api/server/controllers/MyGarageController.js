@@ -5,38 +5,7 @@ import { Op } from 'sequelize';
 
 class MyGarageController {
 
-    // Dropdown APIs
-    async getBrands(req, res, next) {
-        try {
-            const brands = await db.Brands.findAll({
-                attributes: ['id', 'name', 'icon', 'description']
-            });
-            return res.status(httpStatus.OK).json(new APIResponse(brands, "Brands fetched successfully", httpStatus.OK));
-        } catch (error) {
-            console.error("Error fetching brands:", error);
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(new APIResponse({}, "Server Error", httpStatus.INTERNAL_SERVER_ERROR));
-        }
-    }
 
-    async getModelsByBrand(req, res, next) {
-        try {
-            const { brand_id } = req.query;
-            if (!brand_id) {
-                return res.status(httpStatus.BAD_REQUEST).json(new APIResponse({}, "Brand ID is required", httpStatus.BAD_REQUEST));
-            }
-
-            const models = await db.Models.findAll({
-                where: { brand_id: brand_id },
-                attributes: ['id', 'name', 'transmission_type', 'variant']
-            });
-            return res.status(httpStatus.OK).json(new APIResponse(models, "Models fetched successfully", httpStatus.OK));
-        } catch (error) {
-            console.error("Error fetching models:", error);
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(new APIResponse({}, "Server Error", httpStatus.INTERNAL_SERVER_ERROR));
-        }
-    }
-
-    // CRUD APIs
     async addVehicle(req, res, next) {
         try {
             const { id: customer_id } = req.user; // Assuming auth middleware populates req.user
@@ -153,6 +122,36 @@ class MyGarageController {
         } catch (error) {
             console.error("Error fetching vehicles:", error);
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(new APIResponse({}, error.message, httpStatus.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    async getBrands(req, res, next) {
+        try {
+            const brands = await db.Brands.findAll({
+                attributes: ['id', 'name', 'icon', 'description']
+            });
+            return res.status(httpStatus.OK).json(new APIResponse(brands, "Brands fetched successfully", httpStatus.OK));
+        } catch (error) {
+            console.error("Error fetching brands:", error);
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(new APIResponse({}, "Server Error", httpStatus.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    async getModelsByBrand(req, res, next) {
+        try {
+            const { brand_id } = req.query;
+            if (!brand_id) {
+                return res.status(httpStatus.BAD_REQUEST).json(new APIResponse({}, "Brand ID is required", httpStatus.BAD_REQUEST));
+            }
+
+            const models = await db.Models.findAll({
+                where: { brand_id: brand_id },
+                attributes: ['id', 'name', 'transmission_type', 'variant']
+            });
+            return res.status(httpStatus.OK).json(new APIResponse(models, "Models fetched successfully", httpStatus.OK));
+        } catch (error) {
+            console.error("Error fetching models:", error);
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(new APIResponse({}, "Server Error", httpStatus.INTERNAL_SERVER_ERROR));
         }
     }
 }
