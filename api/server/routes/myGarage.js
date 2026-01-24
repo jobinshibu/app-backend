@@ -9,8 +9,8 @@ router.get('/models', MyGarageController.getModelsByBrand);
 
 // CRUD
 router.get('/', MyGarageController.getMyVehicles);
-router.post('/', MyGarageController.addVehicle);
 router.get('/:id', MyGarageController.getVehicleById);
+router.post('/', MyGarageController.addVehicle);
 router.put('/:id', MyGarageController.updateVehicle);
 router.delete('/:id', MyGarageController.deleteVehicle);
 
