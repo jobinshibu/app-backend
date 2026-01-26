@@ -83,7 +83,9 @@ export default async (app) => {
         '/api/v1/user/insurance-plans',
         '/api/v1/user/insurance-specialities',
         '/api/v1/user/webhook',
-        /^\/api\/v1\/user\/packages\/[0-9A-Za-z]+$/
+        /^\/api\/v1\/user\/packages\/[0-9A-Za-z]+$/,
+        '/api/v1/myGarage/brands',
+        '/api/v1/myGarage/models'
       ]
     })
   );
