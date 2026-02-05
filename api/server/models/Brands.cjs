@@ -43,5 +43,29 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true
     }
   );
+  Brands.afterUpdate(async (brand, options) => {
+    if (brand.changed('name')) {
+      try {
+        const EstablishmentBrands = sequelize.models.EstablishmentBrands;
+        const Establishment = sequelize.models.Establishment;
+        if (EstablishmentBrands && Establishment) {
+          const links = await EstablishmentBrands.findAll({
+            where: { brand_id: brand.id },
+            attributes: ['establishment_id'],
+            transaction: options.transaction
+          });
+          for (const link of links) {
+            await Establishment.update(
+              { updated_at: new Date() },
+              { where: { id: link.establishment_id }, transaction: options.transaction, individualHooks: true }
+            );
+          }
+        }
+      } catch (err) {
+        console.error('Brands afterUpdate search sync trigger failed:', err.message);
+      }
+    }
+  });
+
   return Brands;
 };

@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       type: {
-        type: DataTypes.ENUM('Doctor','Hospital','Clinic','Pharmacy','Laboratory','Package','Package Category','Speciality','Day Surgery Centre','Others')
+        type: DataTypes.ENUM('doctor', 'hospital', 'clinic', 'pharmacy', 'laboratory', 'others')
       },
       reference_id: {
         type: DataTypes.INTEGER,

@@ -7,6 +7,25 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'speciality_id',
         as: 'specialityInfo'
       });
+
+      // === SEARCH SYNC HOOKS ===
+      const triggerEstablishmentSync = async (instance, options) => {
+        try {
+          const Establishment = models.Establishment;
+          if (Establishment && instance.establishment_id) {
+            await Establishment.update(
+              { updated_at: new Date() },
+              { where: { id: instance.establishment_id }, transaction: options.transaction, individualHooks: true }
+            );
+          }
+        } catch (err) {
+          console.error('EstablishmentSpeciality search sync trigger failed:', err.message);
+        }
+      };
+
+      EstablishmentSpeciality.afterCreate(triggerEstablishmentSync);
+      EstablishmentSpeciality.afterUpdate(triggerEstablishmentSync);
+      EstablishmentSpeciality.afterDestroy(triggerEstablishmentSync);
     }
   }
   EstablishmentSpeciality.init(

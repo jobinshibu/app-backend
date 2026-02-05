@@ -28,29 +28,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "profession_id",
         as: "working_hours",
       });
-      Profession.afterCreate(async (prof) => {
-        const keyword = `${prof.first_name} ${prof.last_name} ${prof.specialist}`.toLowerCase();
-        await models.Search.upsert({
-          keyword,
-          type: 'doctor',
-          reference_id: prof.id,
-        });
-      });
-
-      Profession.afterUpdate(async (prof) => {
-        const keyword = `${prof.first_name} ${prof.last_name} ${prof.specialist}`.toLowerCase();
-        await models.Search.upsert({
-          keyword,
-          type: 'doctor',
-          reference_id: prof.id,
-        });
-      });
-
-      Profession.afterDestroy(async (prof) => {
-        await models.Search.destroy({
-          where: { reference_id: prof.id, type: 'doctor' },
-        });
-      });
     }
   }
   Profession.init(

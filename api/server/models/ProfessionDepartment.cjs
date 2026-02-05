@@ -11,10 +11,29 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'department_id',
         as: 'departmentInfo'
       });
-       ProfessionDepartment.belongsTo(models.Establishment, {
+      ProfessionDepartment.belongsTo(models.Establishment, {
         foreignKey: 'establishment_id',
         as: 'establishmentInfo'
       });
+
+      // === SEARCH SYNC HOOKS ===
+      const triggerEstablishmentSync = async (instance, options) => {
+        try {
+          const Establishment = models.Establishment;
+          if (Establishment && instance.establishment_id) {
+            await Establishment.update(
+              { updated_at: new Date() },
+              { where: { id: instance.establishment_id }, transaction: options.transaction, individualHooks: true }
+            );
+          }
+        } catch (err) {
+          console.error('ProfessionDepartment search sync trigger failed:', err.message);
+        }
+      };
+
+      ProfessionDepartment.afterCreate(triggerEstablishmentSync);
+      ProfessionDepartment.afterUpdate(triggerEstablishmentSync);
+      ProfessionDepartment.afterDestroy(triggerEstablishmentSync);
     }
   }
   ProfessionDepartment.init(

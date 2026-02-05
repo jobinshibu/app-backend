@@ -91,64 +91,104 @@ module.exports = (sequelize, DataTypes) => {
       });
 
 
-      // Hooks for syncing to Search table
-      Establishment.afterCreate(async (establishment) => {
+      // === CENTRALIZED SEARCH SYNC HELPER ===
+      const syncWithSearch = async (establishmentId, transaction = null) => {
         try {
-          const models = establishment.sequelize.models; // Access all models via sequelize
+          const searchModel = models.Search || models.search;
+          if (!searchModel) return;
 
-          // Get establishment type name dynamically
-          const establishmentType = await models.EstablishmentType.findByPk(establishment.establishment_type);
-          const type = establishmentType ? establishmentType.name : 'Others';
+          const establishment = await models.Establishment.findByPk(establishmentId, {
+            attributes: ["id", "name", "active_status"],
+            include: [
+              { model: models.Zones, as: 'zoneInfo', attributes: ['name'] },
+              { model: models.Cities, as: 'cityInfo', attributes: ['name'] },
+              {
+                model: models.EstablishmentSpeciality,
+                as: 'specialitiesList',
+                include: [{ model: models.Specialities, as: 'specialityInfo', attributes: ['name'] }]
+              },
+              {
+                model: models.EstablishmentBrands,
+                as: 'brandsList',
+                include: [{ model: models.Brands, as: 'brandInfo', attributes: ['name'] }]
+              },
+              {
+                model: models.EstablishmentType,
+                as: 'establishmentTypeInfo',
+                attributes: ['name']
+              }
+            ],
+            transaction
+          });
 
-          const keyword = `${establishment.name} ${establishment.address}`.toLowerCase();
-          await models.Search.upsert({
-            name: establishment.name,
-            keyword,
-            type: type,
-            reference_id: establishment.id,
+          if (!establishment) return;
+
+          // STEP 1: Always delete old entries
+          await searchModel.destroy({
+            where: { reference_id: establishmentId, type: { [Op.ne]: 'doctor' } },
+            transaction
+          });
+
+          // If inactive, don't recreate
+          if (!establishment.active_status) return;
+
+          // STEP 2: Construct keywords
+          const zoneName = establishment.zoneInfo?.name || "";
+          const cityName = establishment.cityInfo?.name || "";
+          const specNames = establishment.specialitiesList?.map(s => s.specialityInfo?.name).filter(Boolean).join(" ") || "";
+          const brandNames = establishment.brandsList?.map(b => b.brandInfo?.name).filter(Boolean).join(" ") || "";
+          const typeName = establishment.establishmentTypeInfo?.name || "Others";
+
+          const keyword = `${establishment.name} ${zoneName} ${cityName} ${specNames} ${brandNames} ${typeName}`.toLowerCase().trim();
+
+          // STEP 3: Create search entry
+          await searchModel.create({
+            name: establishment.name.trim(),
+            keyword: keyword.slice(0, 255),
+            type: typeName.toLowerCase(),
+            reference_id: establishmentId,
             search_count: 0
-          });
+          }, { transaction });
+
         } catch (error) {
-          console.error('Error in Establishment afterCreate hook:', error);
+          console.error(`Model-level search sync failed for establishment ${establishmentId}:`, error);
+        }
+      };
+
+      // === HOOKS ===
+      Establishment.afterCreate(async (establishment, options) => {
+        await syncWithSearch(establishment.id, options.transaction);
+      });
+
+      Establishment.afterUpdate(async (establishment, options) => {
+        await syncWithSearch(establishment.id, options.transaction);
+      });
+
+      Establishment.afterDestroy(async (establishment, options) => {
+        try {
+          const searchModel = models.Search || models.search;
+          if (searchModel) {
+            await searchModel.destroy({
+              where: { reference_id: establishment.id },
+              transaction: options.transaction
+            });
+          }
+        } catch (error) {
+          console.error('Establishment afterDestroy search cleanup failed:', error);
         }
       });
 
-      Establishment.afterUpdate(async (establishment) => {
+      Establishment.afterBulkUpdate(async (options) => {
         try {
-          const models = establishment.sequelize.models;
+          const { where } = options;
+          if (!where || !where.id) return;
 
-          // Get establishment type name dynamically
-          const establishmentType = await models.EstablishmentType.findByPk(establishment.establishment_type);
-          const type = establishmentType ? establishmentType.name : 'Others';
-
-          const keyword = `${establishment.name} ${establishment.address}`.toLowerCase();
-          await models.Search.upsert({
-            name: establishment.name,
-            keyword,
-            type: type,
-            reference_id: establishment.id,
-            search_count: establishment.search_count || 0 // Preserve existing count if needed
-          }, {
-            where: { reference_id: establishment.id, type: type }
-          });
+          let ids = Array.isArray(where.id) ? where.id : [where.id];
+          for (const id of ids) {
+            await syncWithSearch(id, options.transaction);
+          }
         } catch (error) {
-          console.error('Error in Establishment afterUpdate hook:', error);
-        }
-      });
-
-      Establishment.afterDestroy(async (establishment) => {
-        try {
-          const models = establishment.sequelize.models;
-
-          // Get establishment type name dynamically for deletion
-          const establishmentType = await models.EstablishmentType.findByPk(establishment.establishment_type);
-          const type = establishmentType ? establishmentType.name : 'Others';
-
-          await models.Search.destroy({
-            where: { reference_id: establishment.id, type: type }
-          });
-        } catch (error) {
-          console.error('Error in Establishment afterDestroy hook:', error);
+          console.error('Establishment afterBulkUpdate search sync failed:', error);
         }
       });
     }

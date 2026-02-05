@@ -3,28 +3,28 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Specialities extends Model {
     static associate(models) {
-      Specialities.afterCreate(async (speciality) => {
-        const keyword = speciality.name.toLowerCase();
-        await models.Search.upsert({
-          keyword,
-          type: 'speciality',
-          reference_id: speciality.id,
-        });
-      });
-
-      Specialities.afterUpdate(async (speciality) => {
-        const keyword = speciality.name.toLowerCase();
-        await models.Search.upsert({
-          keyword,
-          type: 'speciality',
-          reference_id: speciality.id,
-        });
-      });
-
-      Specialities.afterDestroy(async (speciality) => {
-        await models.Search.destroy({
-          where: { reference_id: speciality.id, type: 'speciality' },
-        });
+      Specialities.afterUpdate(async (speciality, options) => {
+        if (speciality.changed('name')) {
+          try {
+            const EstablishmentSpeciality = sequelize.models.EstablishmentSpeciality;
+            const Establishment = sequelize.models.Establishment;
+            if (EstablishmentSpeciality && Establishment) {
+              const links = await EstablishmentSpeciality.findAll({
+                where: { speciality_id: speciality.id },
+                attributes: ['establishment_id'],
+                transaction: options.transaction
+              });
+              for (const link of links) {
+                await Establishment.update(
+                  { updated_at: new Date() },
+                  { where: { id: link.establishment_id }, transaction: options.transaction, individualHooks: true }
+                );
+              }
+            }
+          } catch (err) {
+            console.error('Specialities afterUpdate search sync trigger failed:', err.message);
+          }
+        }
       });
 
       Specialities.hasMany(models.EstablishmentSpeciality, {
