@@ -2906,11 +2906,11 @@ class DashboardService {
     const workingHoursInclude = {
       model: database.EstablishmentWorkingHour,
       as: 'workingHoursDetails',
-      required: isOpenNow,
+      // required: isOpenNow,
       attributes: ['day_of_week', 'start_time', 'end_time', 'is_day_off'],
-      where: isOpenNow
-        ? { day_of_week: today, is_day_off: false, start_time: { [Op.lte]: nowTimeStr }, end_time: { [Op.gt]: nowTimeStr } }
-        : { day_of_week: today },
+      // where: isOpenNow
+      //   ? { day_of_week: today, is_day_off: false, start_time: { [Op.lte]: nowTimeStr }, end_time: { [Op.gt]: nowTimeStr } }
+      //   : { day_of_week: today },
       separate: true
     };
 
