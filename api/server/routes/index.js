@@ -67,7 +67,7 @@ export default async (app) => {
         '/api/v1/user/request-mobile-update-otp',
         '/api/v1/user/verify-mobile-update-otp',
         '/api/v1/dashboard/popular-searches',
-        /^\/api\/v1\/dashboard\/specialty\/establishment-type\/[0-9]+$/,
+        /^\/api\/v1\/dashboard\/specialty\/establishment-type(\/[0-9]+)?$/,
         '/api/v1/dashboard/demo-login',
         '/api/v1/dashboard/faqs',
         '/api/v1/notificationRoutes/notifications/token',

@@ -1244,12 +1244,6 @@ async categoryEstablishmentSearchListNew(req, res) {
     try {
       const { id } = req.params;
       
-      if (!id) {
-        return res
-          .status(httpStatus.BAD_REQUEST)
-          .json(new APIResponse([], 'establishment_type ID is required.', httpStatus.BAD_REQUEST));
-      }
-
       const response = await DashboardService.getSpecialtiesForEstablishmentType(id);
       if (response.length === 0) {
         return res

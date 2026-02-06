@@ -2256,6 +2256,10 @@ class DashboardService {
 
   async getSpecialtiesForEstablishmentType(establishmentTypeId) {
     try {
+      const typeFilter = establishmentTypeId
+        ? `AND e.establishment_type = ${parseInt(establishmentTypeId)}`
+        : '';
+
       const response = await database.Specialities.findAll({
         attributes: [
           'id',
@@ -2269,7 +2273,7 @@ class DashboardService {
               JOIN establishment_specialities es ON es.establishment_id = pd.establishment_id AND es.speciality_id = Specialities.id
               JOIN establishments e ON pd.establishment_id = e.id
               WHERE ps.speciality_id = Specialities.id
-              AND e.establishment_type = ${parseInt(establishmentTypeId)}
+              ${typeFilter}
             )`),
             'doctorsCount'
           ]
@@ -2280,7 +2284,7 @@ class DashboardService {
               SELECT DISTINCT speciality_id 
               FROM establishment_specialities es 
               JOIN establishments e ON es.establishment_id = e.id 
-              WHERE e.establishment_type = ${parseInt(establishmentTypeId)}
+              ${establishmentTypeId ? `WHERE e.establishment_type = ${parseInt(establishmentTypeId)}` : ''}
             )`)
           }
         },
