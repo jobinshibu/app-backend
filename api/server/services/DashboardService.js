@@ -2270,7 +2270,6 @@ class DashboardService {
               SELECT COUNT(DISTINCT ps.proffession_id)
               FROM professions_specialities ps
               JOIN professions_departments pd ON ps.proffession_id = pd.proffession_id
-              JOIN establishment_specialities es ON es.establishment_id = pd.establishment_id AND es.speciality_id = Specialities.id
               JOIN establishments e ON pd.establishment_id = e.id
               WHERE ps.speciality_id = Specialities.id
               ${typeFilter}
@@ -2281,16 +2280,21 @@ class DashboardService {
         where: {
           id: {
             [Op.in]: database.Sequelize.literal(`(
-              SELECT DISTINCT speciality_id 
-              FROM establishment_specialities es 
-              JOIN establishments e ON es.establishment_id = e.id 
-              ${establishmentTypeId ? `WHERE e.establishment_type = ${parseInt(establishmentTypeId)}` : ''}
+              SELECT speciality_id FROM (
+                SELECT es.speciality_id 
+                FROM establishment_specialities es 
+                JOIN establishments e ON es.establishment_id = e.id 
+                ${establishmentTypeId ? `WHERE e.establishment_type = ${parseInt(establishmentTypeId)}` : ''}
+                
+                UNION
+                
+                SELECT ps.speciality_id
+                FROM professions_specialities ps
+                JOIN professions_departments pd ON ps.proffession_id = pd.proffession_id
+                JOIN establishments e ON pd.establishment_id = e.id
+                ${establishmentTypeId ? `WHERE e.establishment_type = ${parseInt(establishmentTypeId)}` : ''}
+              ) as combined_specs
             )`)
-          }
-        },
-        having: {
-          doctorsCount: {
-            [Op.gt]: 0
           }
         },
         order: [['name', 'ASC']]
