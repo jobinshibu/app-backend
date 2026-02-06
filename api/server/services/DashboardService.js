@@ -2254,6 +2254,50 @@ class DashboardService {
     }
   }
 
+  async getSpecialtiesForEstablishmentType(establishmentTypeId) {
+    try {
+      const response = await database.Specialities.findAll({
+        attributes: [
+          'id',
+          'name',
+          'icon',
+          [
+            database.Sequelize.literal(`(
+              SELECT COUNT(DISTINCT ps.proffession_id)
+              FROM professions_specialities ps
+              JOIN professions_departments pd ON ps.proffession_id = pd.proffession_id
+              JOIN establishment_specialities es ON es.establishment_id = pd.establishment_id AND es.speciality_id = Specialities.id
+              JOIN establishments e ON pd.establishment_id = e.id
+              WHERE ps.speciality_id = Specialities.id
+              AND e.establishment_type = ${parseInt(establishmentTypeId)}
+            )`),
+            'doctorsCount'
+          ]
+        ],
+        where: {
+          id: {
+            [Op.in]: database.Sequelize.literal(`(
+              SELECT DISTINCT speciality_id 
+              FROM establishment_specialities es 
+              JOIN establishments e ON es.establishment_id = e.id 
+              WHERE e.establishment_type = ${parseInt(establishmentTypeId)}
+            )`)
+          }
+        },
+        having: {
+          doctorsCount: {
+            [Op.gt]: 0
+          }
+        },
+        order: [['name', 'ASC']]
+      });
+      return dataParse(response);
+    } catch (error) {
+      console.error('getSpecialtiesForEstablishmentType error:', error);
+      return [];
+    }
+  }
+
   async getProfessionalsAdvanced({
     available,
     search_text,

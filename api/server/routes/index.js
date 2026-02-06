@@ -22,7 +22,7 @@ export default async (app) => {
       //  console.log(req);
       next();
     },
-    
+
     expressjwt({
       secret: config.jwtSecret,
       algorithms: ['HS256'],
@@ -34,7 +34,7 @@ export default async (app) => {
         '/api/v1/user/send-otp',
         '/api/v1/user/login',
         '/api/v1/dashboard/professionals/search',
-        
+
         // '/api/v1/user/update-user',
 
         //dashboard
@@ -67,7 +67,7 @@ export default async (app) => {
         '/api/v1/user/request-mobile-update-otp',
         '/api/v1/user/verify-mobile-update-otp',
         '/api/v1/dashboard/popular-searches',
-        '/api/v1/dashboard/specialties-for-clinics',
+        /^\/api\/v1\/dashboard\/specialty\/establishment-type\/[0-9]+$/,
         '/api/v1/dashboard/demo-login',
         '/api/v1/dashboard/faqs',
         '/api/v1/notificationRoutes/notifications/token',
@@ -133,7 +133,7 @@ export default async (app) => {
   // });
 
   async function mountRoutes() {
-    
+
     try {
       const files = glob.sync('api/server/routes/*.js');
       console.log('Found route files:', files);

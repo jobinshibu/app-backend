@@ -1240,18 +1240,27 @@ async categoryEstablishmentSearchListNew(req, res) {
     return score;
   }
 
-  async getSpecialtiesForClinics(req, res) {
+  async getSpecialtiesByEstablishmentType(req, res) {
     try {
-      const response = await DashboardService.getSpecialtiesForType('Clinic');
+      const { id } = req.params;
+      
+      if (!id) {
+        return res
+          .status(httpStatus.BAD_REQUEST)
+          .json(new APIResponse([], 'establishment_type ID is required.', httpStatus.BAD_REQUEST));
+      }
+
+      const response = await DashboardService.getSpecialtiesForEstablishmentType(id);
       if (response.length === 0) {
         return res
           .status(httpStatus.OK)
-          .json(new APIResponse(response, 'No specialties found for clinics.', httpStatus.OK));
+          .json(new APIResponse(response, 'No specialties found for this establishment type.', httpStatus.OK));
       }
       return res
         .status(httpStatus.OK)
-        .json(new APIResponse(response, 'Specialties for clinics found.', httpStatus.OK));
+        .json(new APIResponse(response, 'Specialties found.', httpStatus.OK));
     } catch (error) {
+      console.error('getSpecialtiesByEstablishmentType error:', error);
       return res
         .status(httpStatus.INTERNAL_SERVER_ERROR)
         .json(

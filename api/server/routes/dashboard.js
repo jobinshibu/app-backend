@@ -89,7 +89,7 @@ router.put(
   MedicalRecordsController.updateMedicalRecord
 );
 
-router.get('/specialties-for-clinics', DashboardController.getSpecialtiesForClinics);
+router.get('/specialty/establishment-type/:id', DashboardController.getSpecialtiesByEstablishmentType);
 
 router.delete('/medical-records/:id', MedicalRecordsController.deleteMedicalRecord);
 
