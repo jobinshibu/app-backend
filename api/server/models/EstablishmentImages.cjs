@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         get() {
           const rawValue = this.getDataValue('image');
           return rawValue
-            ? process.env.IMAGE_PATH + '/establishment/' + rawValue
+            ? process.env.IMAGE_PATH + 'establishment_image/' + rawValue
             : null;
         }
       },
